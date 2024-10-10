@@ -44,17 +44,24 @@ def main():
                 if event.type == pygame.QUIT:
                     running = False
 
+            
+
+            # Call tick() to manage FPS and calculate dt
+            dt = clock.tick(60) / 1000
+
+            # Update game state
+            player.update(dt)
+
+            # Clear screen
             screen.fill((0, 0, 0))
 
             #Draw the player on the screen
             player.draw(screen)
-
         
-
+            # Refresh the display
             pygame.display.flip()
 
-            # Call tick() to manage FPS and calculate dt
-            dt = clock.tick(60) / 1000
+        
 
 
 
