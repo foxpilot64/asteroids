@@ -4,6 +4,7 @@ import time
 import threading
 import pygame
 from constants import *
+from player import Player
 
 running = True
 # Define the resource monitoring function
@@ -31,6 +32,9 @@ def main():
         clock = pygame.time.Clock()
         dt = 0
 
+        # Instantiate the Player object
+        player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+
         #Start the resource monitor in a thread:
         monitor_thread = threading.Thread(target=resource_monitor, daemon=True)
         monitor_thread.start()
@@ -41,6 +45,9 @@ def main():
                     running = False
 
             screen.fill((0, 0, 0))
+
+            #Draw the player on the screen
+            player.draw(screen)
 
         
 
