@@ -1,31 +1,58 @@
-# this allows us to use code from
-# the open-source pygame library
-# throughout this file
+import os
+import psutil
+import time
+import threading
 import pygame
 from constants import *
 
+running = True
+# Define the resource monitoring function
+def resource_monitor():
+    global running
+    while running:    
+        cpu_usage = psutil.cpu_percent(interval=0)  # Grabbing CPU percent
+        memory_info = psutil.virtual_memory()
+        memory_usage = memory_info.used / (1024  * 1024) # Converts bytes to MB
+
+        print(f"CPU usage: {cpu_usage}%")
+        print(f"Memory usage: {memory_usage} MB")
+
+        time.sleep(5)
+
 def main():
-    pygame.init()
- 
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    print("Starting asteroids!")
-    print(f"Screen width: {SCREEN_WIDTH}")
-    print(f"Screen height: {SCREEN_HEIGHT}")
+        global running
+        pygame.init()
+    
+        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        print("Starting asteroids!")
+        print(f"Screen width: {SCREEN_WIDTH}")
+        print(f"Screen height: {SCREEN_HEIGHT}")
 
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return
+        clock = pygame.time.Clock()
+        dt = 0
 
-        screen.fill((0, 0, 0))
-        pygame.display.flip()
+        #Start the resource monitor in a thread:
+        monitor_thread = threading.Thread(target=resource_monitor, daemon=True)
+        monitor_thread.start()
 
-    # This will check if the user has closed the window and exit the game loop if they do.
-    # It will make the window's close button work. 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            return
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
+            screen.fill((0, 0, 0))
+
+        
+
+            pygame.display.flip()
+
+            # Call tick() to manage FPS and calculate dt
+            dt = clock.tick(60) / 1000
+
+
+
+# This line ensures the main() function is only called when the file is run directly.
+# It won't run if it's imported as a module.
 if __name__ == "__main__":
     main()
 
