@@ -47,7 +47,7 @@ def main():
             
 
             # Call tick() to manage FPS and calculate dt
-            dt = clock.tick(60) / 1000
+            dt = clock.tick(60) / 1000.0
 
             # Update game state
             player.update(dt)
