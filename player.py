@@ -26,14 +26,21 @@ class Player(CircleShape):
         self.rotation += PLAYER_TURN_SPEED * dt
 
     def update(self, dt):
+        # Check if mvt and rotation keys are pressed
         keys = pygame.key.get_pressed()
+        
+        # Handle fwd and back mvt
+        if keys[pygame.K_w]:
+            self.move(-dt) 
+        
+        if keys[pygame.K_s]:
+            self.move(dt) 
 
+        # Handle rotation
         if keys[pygame.K_a]:
-            self.rotate(-dt) # Rotate left
-             
-        if keys[pygame.K_d]:
-            self.rotate(dt) # Rotate right
-
+            self.rotate(PLAYER_TURN_SPEED * dt) # Rotate Left
+        elif keys[pygame.K_d]:
+            self.rotate(PLAYER_TURN_SPEED * dt) # Rotate Right
 
     def move(self, dt):
         # Starts with a vector facing up from (0,1) which represents the default fwd direction.
