@@ -3,6 +3,7 @@ import psutil
 import time
 import threading
 import pygame
+import sys
 from constants import *
 from player import Player
 from asteroid import Asteroid
@@ -22,6 +23,8 @@ def resource_monitor():
 
         time.sleep(5)
 
+
+
 def main():
         global running
         pygame.init()
@@ -35,7 +38,6 @@ def main():
         dt = 0
 
         # Create the groups
-        updatable = pygame.sprite.Group()
         drawable = pygame.sprite.Group()
         asteroids = pygame.sprite.Group()
         updatable = pygame.sprite.Group()
@@ -47,6 +49,7 @@ def main():
 
         # Instantiate the Player object
         player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        asteroid_field = AsteroidField()
 
         #Start the resource monitor in a thread:
         monitor_thread = threading.Thread(target=resource_monitor, daemon=True)
@@ -63,7 +66,15 @@ def main():
             dt = clock.tick(60) / 1000.0
 
             # Update game state
-            player.update(dt)
+            updatable.update(dt)
+
+            # Check for collisions
+            for asteroid in asteroids:
+                 if player.collision_detect(asteroid):
+                      print("Game over!")
+                      sys.exit()
+                 
+            
 
             # Clear screen
             screen.fill((0, 0, 0))
