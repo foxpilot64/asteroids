@@ -4,7 +4,7 @@ from asteroid import Asteroid
 from constants import *
 
 
-class AsteroidField(pygame.sprit.Sprite):
+class AsteroidField(pygame.sprite.Sprite):
 
     # This defines the edges of the screen and functions to determine spawn positions
     edges = [
