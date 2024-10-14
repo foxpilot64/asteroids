@@ -4,6 +4,7 @@ import time
 import threading
 import pygame
 import sys
+import math
 from constants import *
 from player import Player
 from asteroid import Asteroid
@@ -25,14 +26,46 @@ def resource_monitor():
 
 # Created a Game Over function
 def game_over(screen):
-     font = pygame.font.Font(None, 74)
-     text = font.render("Game Over", True, (172, 9, 218))
-     text_rect = text.get_rect(center=(screen.get_width()/2, screen.get_height()/2))
-     screen.blit(text, text_rect)
-     pygame.display.flip()
-     time.sleep(5) # Wait for 5 seconds
-     pygame.quit()
-     sys.exit()
+     # Font setup
+    try:
+         font = pygame.font.Font("Fonts/Orbitron-Bold.ttf", 74)
+    except: 
+        print("Font file not found. Dalling back to default font.")
+        font = pygame.font.Font(None, 74)
+
+
+    start_time = pygame.time.get_ticks()
+    duration = 10000 # Color shift duration in milliseconds
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        # Calculate the color based on time:
+        current_time = pygame.time.get_ticks()
+        elapsed = current_time - start_time
+        if elapsed > duration:
+            running = False
+     
+        # Use sine waves to create smooth color transitions
+        red = int(math.sin(elapsed * 0.002) * 127 + 128)
+        green = int(math.sin(elapsed * 0.002 + 2) * 127 + 128)
+        blue = int(math.sin(elapsed * 0.002 + 4) * 127 + 128)
+     
+        # Render and display the text
+        text = font.render("Game Over", True, (red, green, blue))
+        text_rect = text.get_rect(center=(screen.get_width()/2, screen.get_height()/2))
+        
+        screen.fill((0, 0, 0)) # Clear the screen
+        screen.blit(text, text_rect)
+        pygame.display.flip()
+        
+     
+    pygame.quit()
+    sys.exit()
 
 
 
