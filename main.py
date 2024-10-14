@@ -9,6 +9,7 @@ from constants import *
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
+from shot import Shot
 
 running = True
 # Define the resource monitoring function
@@ -85,15 +86,18 @@ def main():
         drawable = pygame.sprite.Group()
         asteroids = pygame.sprite.Group()
         updatable = pygame.sprite.Group()
+        shots = pygame.sprite.Group()
 
 
         Player.containers = (updatable, drawable)
         Asteroid.containers = (asteroids, updatable, drawable)
         AsteroidField.containers = (updatable,) #When you define a tuple with a single element, include comma after that element.
+        Shot.containers = (shots, updatable, drawable)
 
         # Instantiate the Player object
-        player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS)
         asteroid_field = AsteroidField()
+      
 
         #Start the resource monitor in a thread:
         monitor_thread = threading.Thread(target=resource_monitor, daemon=True)
@@ -103,7 +107,9 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        player.shoot(dt)
             
 
             # Call tick() to manage FPS and calculate dt
