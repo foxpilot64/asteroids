@@ -5,6 +5,8 @@ import threading
 import pygame
 from constants import *
 from player import Player
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
 
 running = True
 # Define the resource monitoring function
@@ -35,8 +37,13 @@ def main():
         # Create the groups
         updatable = pygame.sprite.Group()
         drawable = pygame.sprite.Group()
+        asteroids = pygame.sprite.Group()
+        updatable = pygame.sprite.Group()
+
 
         Player.containers = (updatable, drawable)
+        Asteroid.containers = (asteroids, updatable, drawable)
+        AsteroidField.containers = (updatable,) #When you define a tuple with a single element, include comma after that element.
 
         # Instantiate the Player object
         player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
@@ -76,5 +83,3 @@ def main():
 # It won't run if it's imported as a module.
 if __name__ == "__main__":
     main()
-
-
