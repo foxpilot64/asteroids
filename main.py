@@ -23,6 +23,17 @@ def resource_monitor():
 
         time.sleep(5)
 
+# Created a Game Over function
+def game_over(screen):
+     font = pygame.font.Font(None, 74)
+     text = font.render("Game Over", True, (172, 9, 218))
+     text_rect = text.get_rect(center=(screen.get_width()/2, screen.get_height()/2))
+     screen.blit(text, text_rect)
+     pygame.display.flip()
+     time.sleep(5) # Wait for 5 seconds
+     pygame.quit()
+     sys.exit()
+
 
 
 def main():
@@ -71,8 +82,8 @@ def main():
             # Check for collisions
             for asteroid in asteroids:
                  if player.collision_detect(asteroid):
-                      print("Game over!")
-                      sys.exit()
+                      game_over(screen)
+                      
                  
             
 
