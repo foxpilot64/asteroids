@@ -7,20 +7,29 @@ from circleshape import CircleShape
 from shot import Shot
 
 class Player(CircleShape):
-    def __init__(self, x, y):
-        super().__init__(x, y, PLAYER_RADIUS)
-        self.rotation = 0
+    def __init__(self, x, y, radius):
+        super().__init__(x, y, radius)
+        self.rotation = 180
     
-    def shoot(self, shots_group):
-        player_x = self.rect.x
-        player_y = self.rect.y
-        calculated_veloctiy = pygame.math.Vector2(0, -1).rotate(self.angle) * PLAYER_SHOOT_SPEED
-        new_shot = Shot(self.x, self.y, calculated_veloctiy)
-        shots_group.add(new_shot) 
+  
+    def shoot(self, dt):
+        # Ensure your player has a direction attribute representing its current facing angle
+        direction = self.rotation
+        x, y = self.position
+
+        # Create a Shot instance at the player's current position
+        new_shot = Shot(x, y, direction)
+
+        # Calculate and set the velocity for the shot
+        velocity = pygame.Vector2(0, 1) # Initial vector pointing up
+        velocity.rotate_ip(direction)   # Rotate based on player's direction
+        velocity *= PLAYER_SHOOT_SPEED  # Scale by shooting speed
+        new_shot.velocity = velocity    # Assign the velocity to the shot
+        
 
    
     def triangle(self):
-        forward = pygame.Vector2(0, -1).rotate(self.rotation)
+        forward = pygame.Vector2(0, 1).rotate(self.rotation)
         right = forward.rotate(90)
         a = self.position + forward * self.radius
         b = self.position - forward * self.radius - right * self.radius / 1.5
@@ -50,6 +59,10 @@ class Player(CircleShape):
             self.rotate(PLAYER_TURN_SPEED * dt) # Rotate Left
         elif keys[pygame.K_d]:
             self.rotate(PLAYER_TURN_SPEED * dt) # Rotate Right
+
+        # Handle shots
+        if keys[pygame.K_SPACE]:
+            self.shoot(dt)
 
     def move(self, dt):
         # Starts with a vector facing up from (0,1) which represents the default fwd direction.
