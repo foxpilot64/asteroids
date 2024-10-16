@@ -9,6 +9,7 @@ class Shot(CircleShape, pygame.sprite.Sprite):
         super().__init__(x, y, SHOT_RADIUS)
         
         self.position = pygame.Vector2(x, y)
+        self.radius = SHOT_RADIUS
         
         self.velocity = pygame.Vector2(0, -1)
         self.velocity = self.velocity.rotate(-direction) * PLAYER_SHOOT_SPEED
@@ -24,7 +25,7 @@ class Shot(CircleShape, pygame.sprite.Sprite):
     
     def update(self, dt):
         self.position += self.velocity * dt 
-        self.rect.topleft = self.position # Update rect position
+        self.rect.topleft = (self.position.x, self.position.y)
 
     def draw(self, screen):
         pygame.draw.circle(screen, (255, 0, 0), (int(self.position.x), int(self.position.y)), SHOT_RADIUS)
