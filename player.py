@@ -3,6 +3,7 @@ from constants import PLAYER_RADIUS
 from constants import PLAYER_TURN_SPEED
 from constants import PLAYER_SPEED
 from constants import PLAYER_SHOOT_SPEED
+from constants import PLAYER_SHOOT_COOLDOWN
 from circleshape import CircleShape
 from shot import Shot
 
@@ -19,14 +20,18 @@ class Player(CircleShape):
         direction = self.rotation
         x, y = self.position
 
-        # Create a Shot instance at the player's current position
-        new_shot = Shot(x, y, direction)
+        if self.timer <= 0:
+            # Create a Shot instance at the player's current position
+            new_shot = Shot(x, y, direction)
 
-        # Calculate and set the velocity for the shot
-        velocity = pygame.Vector2(0, 1) # Initial vector pointing up
-        velocity.rotate_ip(direction)   # Rotate based on player's direction
-        velocity *= PLAYER_SHOOT_SPEED  # Scale by shooting speed
-        new_shot.velocity = velocity    # Assign the velocity to the shot
+            # Calculate and set the velocity for the shot
+            velocity = pygame.Vector2(0, 1) # Initial vector pointing up
+            velocity.rotate_ip(direction)   # Rotate based on player's direction
+            velocity *= PLAYER_SHOOT_SPEED  # Scale by shooting speed
+            new_shot.velocity = velocity    # Assign the velocity to the shot
+
+            # Set the time to start the cooldown
+            self.timer = PLAYER_SHOOT_COOLDOWN
         
 
    
@@ -65,6 +70,10 @@ class Player(CircleShape):
         # Handle shots
         if keys[pygame.K_SPACE]:
             self.shoot(dt)
+        
+        # Decrease the timer if it's above zero:
+        if self.timer > 0:
+            self.timer -= dt
 
     def move(self, dt):
         # Starts with a vector facing up from (0,1) which represents the default fwd direction.
