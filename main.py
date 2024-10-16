@@ -10,6 +10,7 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
+from game_groups import asteroids, updatable, drawable
 
 running = True
 # Define the resource monitoring function
@@ -31,7 +32,7 @@ def game_over(screen):
     try:
          font = pygame.font.Font("Fonts/Orbitron-Bold.ttf", 74)
     except: 
-        print("Font file not found. Dalling back to default font.")
+        print("Font file not found. Falling back to default font.")
         font = pygame.font.Font(None, 74)
 
 
@@ -97,6 +98,7 @@ def main():
         # Instantiate the Player object
         player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS)
         asteroid_field = AsteroidField()
+        asteroid = Asteroid(x=100, y=200, radius=50, velocity=pygame.Vector2(1, -1), size='large')
       
 
         #Start the resource monitor in a thread:
@@ -118,10 +120,25 @@ def main():
             # Update game state
             updatable.update(dt)
 
+
             # Check for collisions
             for asteroid in asteroids:
                  if player.collision_detect(asteroid):
                       game_over(screen)
+            
+            # Remove collided shots and asteroids 
+            collisions = pygame.sprite.groupcollide(shots, asteroids, True, True, pygame.sprite.collide_circle)    
+            if collisions:
+                print("Collision detected!")
+            for shot, collided_asteroids in collisions.items():
+                for asteroid in collided_asteroids:
+                    # debugging check
+                    print(f"Splitting asteroid at {asteroid.rect.center}")
+                    asteroid.split()
+                    
+                
+
+                     
                       
                  
             
