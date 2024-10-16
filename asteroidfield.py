@@ -2,6 +2,8 @@ import pygame
 import random
 from asteroid import Asteroid
 from constants import *
+from shot import Shot
+from player import Player
 
 
 class AsteroidField(pygame.sprite.Sprite):
@@ -37,8 +39,16 @@ class AsteroidField(pygame.sprite.Sprite):
 
     
     def spawn(self, radius, position, velocity):
+    
+        if radius >= LARGE_ASTEROID_MIN_RADIUS:
+            size = 'large'
+        elif radius >= MEDIUM_ASTEROID_MIN_RADIUS:
+            size = 'medium'
+        else:
+            size = 'small'
+
         # Create and configure a new asteroid
-        asteroid = Asteroid(position.x, position.y, radius, velocity)
+        asteroid = Asteroid(position.x, position.y, radius, velocity, size)
         asteroid.velocity = velocity # Assign velocity for mvt
 
     # Called each frame to update the asteroid field, it increments the spawn_timer based on dt to track passage of time.
