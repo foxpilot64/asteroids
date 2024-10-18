@@ -127,14 +127,15 @@ def main():
                       game_over(screen)
             
             # Remove collided shots and asteroids 
-            collisions = pygame.sprite.groupcollide(shots, asteroids, True, True, pygame.sprite.collide_circle)    
+            collisions = pygame.sprite.groupcollide(shots, asteroids, True, False, pygame.sprite.collide_circle)    
             if collisions:
                 print("Collision detected!")
             for shot, collided_asteroids in collisions.items():
                 for asteroid in collided_asteroids:
                     # debugging check
                     print(f"Splitting asteroid at {asteroid.rect.center}")
-                    asteroid.split()
+                    asteroid.split() 
+                    asteroid.kill() # Remove the original asteroid after splitting. 
                     
                 
 
