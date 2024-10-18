@@ -1,4 +1,5 @@
 import pygame
+import random
 from circleshape import CircleShape
 from game_groups import asteroids, updatable, drawable
 from constants import *
@@ -47,24 +48,41 @@ class Asteroid(CircleShape, pygame.sprite.Sprite):
         return None, None
 
     def split(self):
-        self.kill()
+        self.kill() # Kill the original asteroid
 
-        if self.size == 'large':
-            medium_radius, medium_velocity = self.get_asteroid_properties('large')
-            med_asteroid1 = Asteroid(self.position.x, self.position.y, medium_radius, medium_velocity, size='medium')
-            med_asteroid2 = Asteroid(self.position.x, self.position.y, medium_radius, medium_velocity, size='medium')
-            self.containers[0].add(med_asteroid1, med_asteroid2)
-        elif self.size == 'medium':
-            small_radius, small_velocity = self.get_asteroid_properties('medium')
-            small_asteroid1 = Asteroid(self.position.x, self.position.y, small_radius, small_velocity, size='small')
-            small_asteroid2 = Asteroid(self.position.x, self.position.y, small_radius, small_velocity, size='small')
-            self.containers[0].add(small_asteroid1, small_asteroid2)
-        elif self.size ==  'small':
-            # No further splitting, asteroids just dissapear.
-                pass
+        if self.radius <= ASTEROID_MIN_RADIUS:
+            return # Don't split if it's already at minimum size.
+        
+        # Generate random angle between 20 and 50 degrees.
+        random_angle = random.uniform(20, 50)
 
-        # Call self.kill() to remove the original asteroid    
-        self.kill()
+        # Create two new velocity vectors
+        new_velocity1 = self.velocity.rotate(random_angle)
+        new_velocity2 = self.velocity.rotate(-random_angle)
+
+        # Scale up the new velocities:
+        new_velocity1 *= 1.2
+        new_velocity2 *= 1.2
+
+        # Calculate new radius
+        new_radius = self.radius - ASTEROID_MIN_RADIUS
+        new_size = new_radius * 2 # size is diameter
+
+       
+        # Create two new asteroids
+        Asteroid(self.rect.centerx, self.rect.centery, new_radius, new_velocity1, new_size) 
+        Asteroid(self.rect.centerx, self.rect.centery, new_radius, new_velocity2, new_size)
+
+       
+
+      
+      
+
+
+        
+
+      
+        
 
 
 
