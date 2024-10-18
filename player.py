@@ -10,17 +10,23 @@ from shot import Shot
 class Player(CircleShape):
     def __init__(self, x, y, radius):
         super().__init__(x, y, radius)
-        self.rotation = 180
+        self.angle = 180
         self.timer = 0
+        self.velocity = pygame.Vector2(0, 0)
+        self.acceleration = 200  # pixels per second squared
+        self.max_speed = 300  # maximum speed in pixels per second
+
+        self.rect = pygame.Rect(x - radius, y - radius, radius * 2, radius * 2)
 
     
   
     def shoot(self, dt):
         # Ensure your player has a direction attribute representing its current facing angle
-        direction = self.rotation
-        x, y = self.position
+        direction = self.angle
+        
 
         if self.timer <= 0:
+            x, y = self.position
             # Create a Shot instance at the player's current position
             new_shot = Shot(x, y, direction)
 
@@ -36,7 +42,7 @@ class Player(CircleShape):
 
    
     def triangle(self):
-        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        forward = pygame.Vector2(0, 1).rotate(self.angle)
         right = forward.rotate(90)
         a = self.position + forward * self.radius
         b = self.position - forward * self.radius - right * self.radius / 1.5
@@ -47,25 +53,45 @@ class Player(CircleShape):
     def draw(self, screen):
         pygame.draw.polygon(screen, "white", self.triangle(), 2)
 
-    def rotate(self, dt):
-        self.rotation -= PLAYER_TURN_SPEED * dt
+  
 
     def update(self, dt):
         # Check if mvt and rotation keys are pressed
         keys = pygame.key.get_pressed()
         
-        # Handle fwd and back mvt
-        if keys[pygame.K_w]:
-            self.move(dt) 
-        
-        if keys[pygame.K_s]:
-            self.move(-dt) 
+       
 
         # Handle rotation
         if keys[pygame.K_a]:
-            self.rotate(PLAYER_TURN_SPEED * dt) # Rotate Left
+            self.angle += PLAYER_TURN_SPEED * dt 
         elif keys[pygame.K_d]:
-            self.rotate(PLAYER_TURN_SPEED * dt) # Rotate Right
+            self.angle -= PLAYER_TURN_SPEED * dt 
+            self.angle %= 360
+
+       
+         # Handle acceleration
+        acceleration = pygame.Vector2(0, 0) 
+        if keys[pygame.K_w]:
+            acceleration = pygame.Vector2(0, self.acceleration).rotate(self.angle)
+        elif keys[pygame.K_s]:
+            acceleration = pygame.Vector2(0, -self.acceleration).rotate(self.angle)
+            #Movement Debug:
+            print(f"Angle: {self.angle}, Acceleration: {acceleration}, Velocity: {self.velocity}, Position: {self.position}")
+     
+        self.velocity += acceleration * dt
+        self.position += self.velocity * dt
+
+        friction = 0.96 # Adjust for feeling u want
+        self.velocity *= friction 
+        
+        # Limit speed
+        if self.velocity.length() > self.max_speed:
+            self.velocity.scale_to_length(self.max_speed)
+        
+        # Update position:
+        self.position += self.velocity * dt
+        self.rect.center = self.position
+    
 
         # Handle shots
         if keys[pygame.K_SPACE]:
@@ -75,9 +101,24 @@ class Player(CircleShape):
         if self.timer > 0:
             self.timer -= dt
 
+        # Screen wrapping
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.position.x %= screen_width
+        self.position.y %= screen_height
+        self.rect.center = self.position
+    
+    def rotate(self, angle):
+        self.angle = (self.angle + angle) % 360
+        #self.image = pygame.transform.rotate(self.original_image, self.angle)
+        #self.rect = self.image.get_rect(center=self.rect.center)
+    
+     # def rotate(self, dt):
+        #self.rotation -= PLAYER_TURN_SPEED * dt
+        
+
     def move(self, dt):
         # Starts with a vector facing up from (0,1) which represents the default fwd direction.
         # Then rotate the vector by the player's rotation attribute.
-        forward = pygame.Vector2(0, -1).rotate(-self.rotation)
+        forward = pygame.Vector2(0, -1).rotate(-self.angle)
         #Scale the vector to account for speed and time.
         self.position += forward * PLAYER_SPEED * dt
