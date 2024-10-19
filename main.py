@@ -98,7 +98,7 @@ def main():
         # Instantiate the Player object
         player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS)
         asteroid_field = AsteroidField()
-        asteroid = Asteroid(x=100, y=200, radius=50, velocity=pygame.Vector2(1, -1), size='large')
+       
       
 
         #Start the resource monitor in a thread:
@@ -137,13 +137,7 @@ def main():
                     asteroid.split() 
                     asteroid.kill() # Remove the original asteroid after splitting. 
                     
-                
-
-                     
-                      
-                 
             
-
             # Clear screen
             screen.fill((0, 0, 0))
 
@@ -155,8 +149,6 @@ def main():
             pygame.display.flip()
 
         
-
-
 
 # This line ensures the main() function is only called when the file is run directly.
 # It won't run if it's imported as a module.
